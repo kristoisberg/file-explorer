@@ -1,4 +1,4 @@
-# Unnamed file explorer
+# Dora the file explorer
 
 ![preview](https://i.imgur.com/xS4DH32.png)
 
