@@ -1,0 +1,31 @@
+{
+  "presets": ["next/babel"],
+  "plugins": [
+    [
+      "import",
+      {
+        "libraryName": "lodash",
+        "libraryDirectory": "",
+        "camel2DashComponentName": false
+      },
+      "import-lodash"
+    ],
+    [
+      "import",
+      {
+        "libraryName": "date-fns",
+        "libraryDirectory": "",
+        "camel2DashComponentName": false
+      },
+      "import-date-fns"
+    ],
+    [
+      "import",
+      {
+        "libraryName": "reactstrap",
+        "camel2DashComponentName": false
+      },
+      "import-reactstrap"
+    ]
+  ]
+}
