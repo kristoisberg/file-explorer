@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import { ActiveDirectory, ChildDirectory } from "../types/directory";
 import { File } from "../types/file";
 import { getPageTitle } from "../config";
-import Table, { Column } from "../components/table";
+import Table, { Columns } from "../components/table";
 
 type Props = {
   title: string;
@@ -20,38 +20,46 @@ const formatDate = (date: string): string =>
 
 const getDirectoryName = (name: string): string => name || "Root";
 
-const DIRECTORY_COLUMNS: Column<ChildDirectory>[] = [
-  { name: "Name", property: "name", render: (value): string => String(value) },
-  {
+const DIRECTORY_COLUMNS: Columns<ChildDirectory> = {
+  name: {
+    name: "Name",
+    render: (value): string => String(value),
+    sort: (a, b): number => String(a).localeCompare(String(b)),
+  },
+  createdDate: {
     name: "Created date",
-    property: "createdDate",
     render: (value): string => formatDate(String(value)),
+    sort: (a, b): number => String(a).localeCompare(String(b)),
   },
-  {
+  modifiedDate: {
     name: "Modified date",
-    property: "modifiedDate",
     render: (value): string => formatDate(String(value)),
+    sort: (a, b): number => String(a).localeCompare(String(b)),
   },
-];
+};
 
-const FILE_COLUMNS: Column<File>[] = [
-  { name: "Name", property: "name", render: (value): string => String(value) },
-  {
+const FILE_COLUMNS: Columns<File> = {
+  name: {
+    name: "Name",
+    render: (value): string => String(value),
+    sort: (a, b): number => String(a).localeCompare(String(b)),
+  },
+  size: {
     name: "Size",
-    property: "size",
     render: (value): string => prettyBytes(Number(value)),
+    sort: (a, b): number => (Number(a) < Number(b) ? 1 : -1),
   },
-  {
+  createdDate: {
     name: "Created date",
-    property: "createdDate",
     render: (value): string => formatDate(String(value)),
+    sort: (a, b): number => String(a).localeCompare(String(b)),
   },
-  {
+  modifiedDate: {
     name: "Modified date",
-    property: "modifiedDate",
     render: (value): string => formatDate(String(value)),
+    sort: (a, b): number => String(a).localeCompare(String(b)),
   },
-];
+};
 
 const DirectoryPage: NextPage<Props> = ({
   title,
@@ -78,6 +86,8 @@ const DirectoryPage: NextPage<Props> = ({
         columns={DIRECTORY_COLUMNS}
         data={directories}
         keyColumn="id"
+        defaultSortColumn="name"
+        defaultSortOrder="asc"
         actions={({ path }): JSX.Element => (
           <a
             href={`/api/archive?path=${path}`}
@@ -95,6 +105,8 @@ const DirectoryPage: NextPage<Props> = ({
       columns={FILE_COLUMNS}
       data={files}
       keyColumn="id"
+      defaultSortColumn="name"
+      defaultSortOrder="asc"
       actions={({ path }): JSX.Element => (
         <>
           <a

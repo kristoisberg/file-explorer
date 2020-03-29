@@ -7,6 +7,7 @@
 - The main functionality works even without JS enabled in browser
 - Small bundle
 - Navigating the directory tree
+- Sorting files and subdirectories
 - Downloading files
 - Downloading archives of files and directories
 
