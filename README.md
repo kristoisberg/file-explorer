@@ -4,7 +4,7 @@
 
 **Current features (Kickstarter style)**
 
-- Works even without JS enabled in browser
+- The main functionality works even without JS enabled in browser
 - Small bundle
 - Navigating the directory tree
 - Downloading files
