@@ -29,15 +29,17 @@ function Table<T extends { [key: string]: unknown }>({
       <ReactstrapTable bordered striped>
         <thead className="thead">
           {columns.map(({ name: columnName }) => (
-            <th scope="col">{columnName}</th>
+            <th scope="col" key={columnName}>
+              {columnName}
+            </th>
           ))}
           {actions && <th scope="col">Actions</th>}
         </thead>
         <tbody>
           {data.map((row) => (
             <tr>
-              {columns.map(({ property, render }) => (
-                <td>{render(row[property])}</td>
+              {columns.map(({ name: columnName, property, render }) => (
+                <td key={columnName}>{render(row[property])}</td>
               ))}
               {actions && <td>{actions(row)}</td>}
             </tr>
