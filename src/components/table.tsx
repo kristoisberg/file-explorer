@@ -5,7 +5,6 @@ type SortOrder = "asc" | "desc";
 type ColumnValue = string | number;
 type TableData = { [key: string]: ColumnValue };
 
-// TODO: if possible, refactor so render and sort would know the actual type of the value
 type Column<T extends TableData> = {
   name: string;
   render: (value: T) => JSX.Element | string;
@@ -26,7 +25,6 @@ type Props<T extends TableData> = {
   actions?: (row: T) => JSX.Element;
 };
 
-// this is such a mess it even broke proptypes
 function Table<T extends TableData>({
   name,
   columns,
