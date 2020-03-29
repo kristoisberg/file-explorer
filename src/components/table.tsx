@@ -1,25 +1,27 @@
 import React from "react";
 import { Table as ReactstrapTable } from "reactstrap";
 
-export type Column<T extends { [key: string]: unknown }> = {
+export type Column<T extends { [key: string]: React.Key | undefined }> = {
   name: string;
   property: keyof T;
-  render: (value: unknown) => string;
+  render: (value: T[keyof T]) => string;
 };
 
-type Props<T extends { [key: string]: unknown }> = {
+type Props<T extends { [key: string]: React.Key | undefined }> = {
   name: string;
   columns: Column<T>[];
   data: T[];
+  keyColumn: keyof T;
   actions?: (row: T) => JSX.Element;
 };
 
 // this is such a mess it even broke proptypes
-function Table<T extends { [key: string]: unknown }>({
+function Table<T extends { [key: string]: React.Key | undefined }>({
   name,
   columns,
   data,
   actions,
+  keyColumn,
 }: Props<T>): JSX.Element {
   return (
     <>
@@ -37,7 +39,7 @@ function Table<T extends { [key: string]: unknown }>({
         </thead>
         <tbody>
           {data.map((row) => (
-            <tr>
+            <tr key={row[keyColumn]}>
               {columns.map(({ name: columnName, property, render }) => (
                 <td key={columnName}>{render(row[property])}</td>
               ))}

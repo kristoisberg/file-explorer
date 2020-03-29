@@ -77,6 +77,7 @@ const DirectoryPage: NextPage<Props> = ({
         name="Subdirectories"
         columns={DIRECTORY_COLUMNS}
         data={directories}
+        keyColumn="id"
         actions={({ path }): JSX.Element => (
           <a
             href={`/api/archive?path=${path}`}
@@ -93,6 +94,7 @@ const DirectoryPage: NextPage<Props> = ({
       name="Files"
       columns={FILE_COLUMNS}
       data={files}
+      keyColumn="id"
       actions={({ path }): JSX.Element => (
         <>
           <a
