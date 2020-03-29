@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Table as ReactstrapTable } from "reactstrap";
 
 type SortOrder = "asc" | "desc";
-type ColumnValue = string | number;
-type TableData = { [key: string]: ColumnValue };
+type TableData = { [key: string]: string | number };
 
 type Column<T extends TableData> = {
   name: string;
