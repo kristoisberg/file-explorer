@@ -6,14 +6,14 @@ type ColumnValue = string | number;
 type TableData = { [key: string]: ColumnValue };
 
 // TODO: if possible, refactor so render and sort would know the actual type of the value
-type Column = {
+type Column<T extends TableData> = {
   name: string;
-  render: (value: ColumnValue) => string;
-  sort: (a: ColumnValue, b: ColumnValue) => number;
+  render: (value: T) => JSX.Element | string;
+  sort: (a: T, b: T) => number;
 };
 
 export type Columns<T extends TableData> = {
-  [key in keyof Partial<T>]: Column;
+  [key in keyof Partial<T>]: Column<T>;
 };
 
 type Props<T extends TableData> = {
@@ -40,9 +40,7 @@ function Table<T extends TableData>({
   const [sortOrder, setSortOrder] = useState<SortOrder>(defaultSortOrder);
 
   const sortedData = [...data].sort(
-    (a, b) =>
-      columns[sortColumn].sort(a[sortColumn], b[sortColumn]) *
-      (sortOrder === "asc" ? 1 : -1)
+    (a, b) => columns[sortColumn].sort(a, b) * (sortOrder === "asc" ? 1 : -1)
   );
 
   const onClickColumn = (column: keyof T): void => {
@@ -78,8 +76,8 @@ function Table<T extends TableData>({
           {sortedData.map((row) => (
             <tr key={row[keyColumn]}>
               {Object.entries(columns).map(
-                ([property, { name: columnName, render }]) => (
-                  <td key={columnName}>{render(row[property])}</td>
+                ([, { name: columnName, render }]) => (
+                  <td key={columnName}>{render(row)}</td>
                 )
               )}
               {actions && <td>{actions(row)}</td>}

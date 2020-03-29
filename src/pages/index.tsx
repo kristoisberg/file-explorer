@@ -4,7 +4,6 @@ import fetch from "isomorphic-unfetch";
 import { Container, Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { parseISO, format } from "date-fns";
 import prettyBytes from "pretty-bytes";
-import PropTypes from "prop-types";
 import { ActiveDirectory, ChildDirectory } from "../types/directory";
 import { File } from "../types/file";
 import { getPageTitle } from "../config";
@@ -23,41 +22,47 @@ const getDirectoryName = (name: string): string => name || "Root";
 const DIRECTORY_COLUMNS: Columns<ChildDirectory> = {
   name: {
     name: "Name",
-    render: (value): string => String(value),
-    sort: (a, b): number => String(a).localeCompare(String(b)),
+    render: ({ name, path }): JSX.Element => (
+      <a href={`?path=${path}`}>{name}</a>
+    ),
+    sort: ({ name: a }, { name: b }): number => a.localeCompare(b),
   },
   createdDate: {
     name: "Created date",
-    render: (value): string => formatDate(String(value)),
-    sort: (a, b): number => String(a).localeCompare(String(b)),
+    render: ({ createdDate }): string => formatDate(createdDate),
+    sort: ({ createdDate: a }, { createdDate: b }): number =>
+      a.localeCompare(b),
   },
   modifiedDate: {
     name: "Modified date",
-    render: (value): string => formatDate(String(value)),
-    sort: (a, b): number => String(a).localeCompare(String(b)),
+    render: ({ modifiedDate }): string => formatDate(modifiedDate),
+    sort: ({ modifiedDate: a }, { modifiedDate: b }): number =>
+      a.localeCompare(b),
   },
 };
 
 const FILE_COLUMNS: Columns<File> = {
   name: {
     name: "Name",
-    render: (value): string => String(value),
-    sort: (a, b): number => String(a).localeCompare(String(b)),
+    render: ({ name }): string => name,
+    sort: ({ name: a }, { name: b }): number => a.localeCompare(b),
   },
   size: {
     name: "Size",
-    render: (value): string => prettyBytes(Number(value)),
-    sort: (a, b): number => (Number(a) < Number(b) ? 1 : -1),
+    render: ({ size }): string => prettyBytes(size),
+    sort: ({ size: a }, { size: b }): number => (a < b ? -1 : 1),
   },
   createdDate: {
     name: "Created date",
-    render: (value): string => formatDate(String(value)),
-    sort: (a, b): number => String(a).localeCompare(String(b)),
+    render: ({ createdDate }): string => formatDate(createdDate),
+    sort: ({ createdDate: a }, { createdDate: b }): number =>
+      a.localeCompare(b),
   },
   modifiedDate: {
     name: "Modified date",
-    render: (value): string => formatDate(String(value)),
-    sort: (a, b): number => String(a).localeCompare(String(b)),
+    render: ({ modifiedDate }): string => formatDate(modifiedDate),
+    sort: ({ modifiedDate: a }, { modifiedDate: b }): number =>
+      a.localeCompare(b),
   },
 };
 
@@ -129,42 +134,6 @@ const DirectoryPage: NextPage<Props> = ({
     />
   </Container>
 );
-
-// oh god why do i do this to myself
-DirectoryPage.propTypes = {
-  title: PropTypes.string.isRequired,
-  contents: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    path: PropTypes.string.isRequired,
-    parents: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        path: PropTypes.string.isRequired,
-      }).isRequired
-    ).isRequired,
-    directories: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        path: PropTypes.string.isRequired,
-        createdDate: PropTypes.string.isRequired,
-        modifiedDate: PropTypes.string.isRequired,
-      }).isRequired
-    ).isRequired,
-    files: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        path: PropTypes.string.isRequired,
-        size: PropTypes.number.isRequired,
-        createdDate: PropTypes.string.isRequired,
-        modifiedDate: PropTypes.string.isRequired,
-      }).isRequired
-    ).isRequired,
-  }).isRequired,
-};
 
 DirectoryPage.getInitialProps = async ({
   query,
