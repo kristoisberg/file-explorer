@@ -1,44 +1,66 @@
 import React from "react";
 import { NextPage, NextPageContext } from "next";
 import fetch from "isomorphic-unfetch";
-import { Container, Table, Breadcrumb, BreadcrumbItem } from "reactstrap";
+import { Container, Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { parseISO, format } from "date-fns";
 import prettyBytes from "pretty-bytes";
 import PropTypes from "prop-types";
-import { ActiveDirectory } from "../types/directory";
+import { ActiveDirectory, ChildDirectory } from "../types/directory";
+import { File } from "../types/file";
 import { getPageTitle } from "../config";
+import Table, { Column } from "../components/table";
 
-export type Props = {
+type Props = {
   title: string;
   contents: ActiveDirectory;
 };
 
-const getDirectoryName = (name: string): string => name || "Root";
-
 const formatDate = (date: string): string =>
   format(parseISO(date), "dd.MM.yyyy HH:mm:ss");
+
+const getDirectoryName = (name: string): string => name || "Root";
+
+const DIRECTORY_COLUMNS: Column<ChildDirectory>[] = [
+  { name: "Name", property: "name", render: (value): string => String(value) },
+  {
+    name: "Created date",
+    property: "createdDate",
+    render: (value): string => formatDate(String(value)),
+  },
+  {
+    name: "Modified date",
+    property: "modifiedDate",
+    render: (value): string => formatDate(String(value)),
+  },
+];
+
+const FILE_COLUMNS: Column<File>[] = [
+  { name: "Name", property: "name", render: (value): string => String(value) },
+  {
+    name: "Size",
+    property: "size",
+    render: (value): string => prettyBytes(Number(value)),
+  },
+  {
+    name: "Created date",
+    property: "createdDate",
+    render: (value): string => formatDate(String(value)),
+  },
+  {
+    name: "Modified date",
+    property: "modifiedDate",
+    render: (value): string => formatDate(String(value)),
+  },
+];
 
 const DirectoryPage: NextPage<Props> = ({
   title,
   contents: { directories, files, parents, name },
 }) => (
   <Container>
-    <style jsx>
-      {`
-        h5 {
-          margin-top: 50px;
-        }
-
-        h1 {
-          margin-bottom: 50px;
-        }
-
-        a.btn:not(:first-of-type) {
-          margin-left: 2px;
-        }
-      `}
-    </style>
-    <h1 className="display-1">{title}</h1>
+    <h1 className="display-1" style={{ marginBottom: 50 }}>
+      {title}
+    </h1>
 
     <Breadcrumb>
       {parents.map(({ id, name: parentName, path }) => (
@@ -51,85 +73,46 @@ const DirectoryPage: NextPage<Props> = ({
     </Breadcrumb>
 
     {directories.length > 0 && (
-      <>
-        <h5 className="display-5">Subdirectories</h5>
-        <Table bordered striped>
-          <thead className="thead">
-            <th scope="col">Name</th>
-            <th scope="col">Created date</th>
-            <th scope="col">Modified date</th>
-            <th scope="col">Actions</th>
-          </thead>
-          <tbody>
-            {directories.map(
-              ({
-                id,
-                name: directoryName,
-                path,
-                createdDate,
-                modifiedDate,
-              }) => (
-                <tr key={id}>
-                  <td>
-                    <a href={`?path=${path}`}>{directoryName}</a>
-                  </td>
-                  <td>{formatDate(createdDate)}</td>
-                  <td>{formatDate(modifiedDate)}</td>
-                  <td>
-                    <a
-                      href={`/api/archive?path=${path}`}
-                      download
-                      className="btn btn-primary"
-                    >
-                      .zip
-                    </a>
-                  </td>
-                </tr>
-              )
-            )}
-          </tbody>
-        </Table>
-      </>
+      <Table<ChildDirectory>
+        name="Subdirectories"
+        columns={DIRECTORY_COLUMNS}
+        data={directories}
+        actions={({ path }): JSX.Element => (
+          <a
+            href={`/api/archive?path=${path}`}
+            download
+            className="btn btn-primary"
+          >
+            .zip
+          </a>
+        )}
+      />
     )}
 
-    <h5 className="display-5">Files</h5>
-    <Table bordered striped>
-      <thead className="thead">
-        <th scope="col">Name</th>
-        <th scope="col">Size</th>
-        <th scope="col">Created date</th>
-        <th scope="col">Modified date</th>
-        <th scope="col">Actions</th>
-      </thead>
-      <tbody>
-        {files.map(
-          ({ id, name: fileName, size, path, createdDate, modifiedDate }) => (
-            <tr key={id}>
-              <td>{fileName}</td>
-              <td>{prettyBytes(size)}</td>
-              <td>{formatDate(createdDate)}</td>
-              <td>{formatDate(modifiedDate)}</td>
-              <td>
-                <a
-                  href={`/api/download?path=${path}`}
-                  download
-                  className="btn btn-primary"
-                >
-                  Download
-                </a>
-                <a
-                  href={`/api/archive?path=${path}`}
-                  download
-                  className="btn btn-primary"
-                >
-                  .zip
-                </a>
-              </td>
-            </tr>
-          )
-        )}
-      </tbody>
-    </Table>
+    <Table<File>
+      name="Files"
+      columns={FILE_COLUMNS}
+      data={files}
+      actions={({ path }): JSX.Element => (
+        <>
+          <a
+            href={`/api/download?path=${path}`}
+            download
+            className="btn btn-primary"
+            style={{ marginRight: 2 }}
+          >
+            Download
+          </a>
+          <a
+            href={`/api/archive?path=${path}`}
+            download
+            className="btn btn-primary"
+          >
+            .zip
+          </a>
+        </>
+      )}
+    />
   </Container>
 );
 
