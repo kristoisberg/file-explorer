@@ -30,12 +30,14 @@ const DIRECTORY_COLUMNS: Columns<ChildDirectory> = {
   },
   createdDate: {
     name: "Created date",
+    alignment: "center",
     render: ({ createdDate }): string => formatDate(createdDate),
     sort: ({ createdDate: a }, { createdDate: b }): number =>
       a.localeCompare(b),
   },
   modifiedDate: {
     name: "Modified date",
+    alignment: "center",
     render: ({ modifiedDate }): string => formatDate(modifiedDate),
     sort: ({ modifiedDate: a }, { modifiedDate: b }): number =>
       a.localeCompare(b),
@@ -50,17 +52,20 @@ const FILE_COLUMNS: Columns<File> = {
   },
   size: {
     name: "Size",
+    alignment: "center",
     render: ({ size }): string => prettyBytes(size),
     sort: ({ size: a }, { size: b }): number => (a < b ? -1 : 1),
   },
   createdDate: {
     name: "Created date",
+    alignment: "center",
     render: ({ createdDate }): string => formatDate(createdDate),
     sort: ({ createdDate: a }, { createdDate: b }): number =>
       a.localeCompare(b),
   },
   modifiedDate: {
     name: "Modified date",
+    alignment: "center",
     render: ({ modifiedDate }): string => formatDate(modifiedDate),
     sort: ({ modifiedDate: a }, { modifiedDate: b }): number =>
       a.localeCompare(b),

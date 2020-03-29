@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Table as ReactstrapTable } from "reactstrap";
 
 type SortOrder = "asc" | "desc";
+type Alignment = "left" | "center" | "right";
 type TableData = { [key: string]: string | number };
 
 type Column<T extends TableData> = {
   name: string;
+  alignment?: Alignment;
   render: (value: T) => JSX.Element | string;
   sort: (a: T, b: T) => number;
 };
@@ -54,27 +56,39 @@ function Table<T extends TableData>({
       <ReactstrapTable bordered striped>
         <thead className="thead">
           <tr>
-            {Object.entries(columns).map(([property, { name: columnName }]) => (
-              <th
-                scope="col"
-                key={columnName}
-                onClick={(): void => onClickColumn(property)}
-              >
-                {columnName}
+            {Object.entries(columns).map(
+              ([property, { name: columnName, alignment }]) => (
+                <th
+                  scope="col"
+                  key={columnName}
+                  onClick={(): void => onClickColumn(property)}
+                  className={`text-${alignment || "left"}`}
+                >
+                  {columnName}
+                </th>
+              )
+            )}
+            {actions && (
+              <th scope="col" className="text-center">
+                Actions
               </th>
-            ))}
-            {actions && <th scope="col">Actions</th>}
+            )}
           </tr>
         </thead>
         <tbody>
           {sortedData.map((row) => (
             <tr key={row[keyColumn]}>
               {Object.entries(columns).map(
-                ([, { name: columnName, render }]) => (
-                  <td key={columnName}>{render(row)}</td>
+                ([, { name: columnName, render, alignment }]) => (
+                  <td
+                    key={columnName}
+                    className={`text-${alignment || "left"}`}
+                  >
+                    {render(row)}
+                  </td>
                 )
               )}
-              {actions && <td>{actions(row)}</td>}
+              {actions && <td className="text-center">{actions(row)}</td>}
             </tr>
           ))}
         </tbody>
