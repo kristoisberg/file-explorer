@@ -50,9 +50,7 @@ function Table<T extends TableData>({
 
   return (
     <>
-      <h5 className="display-5" style={{ marginTop: 50 }}>
-        {name}
-      </h5>
+      <h5 className="display-5">{name}</h5>
       <ReactstrapTable bordered striped>
         <thead className="thead">
           <tr>
@@ -61,7 +59,6 @@ function Table<T extends TableData>({
                 scope="col"
                 key={columnName}
                 onClick={(): void => onClickColumn(property)}
-                style={{ cursor: "pointer" }}
               >
                 {columnName}
               </th>

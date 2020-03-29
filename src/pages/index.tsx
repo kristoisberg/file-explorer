@@ -1,5 +1,6 @@
 import React from "react";
 import { NextPage, NextPageContext } from "next";
+import Head from "next/head";
 import fetch from "isomorphic-unfetch";
 import { Container, Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { parseISO, format } from "date-fns";
@@ -70,69 +71,71 @@ const DirectoryPage: NextPage<Props> = ({
   title,
   contents: { directories, files, parents, name },
 }) => (
-  <Container>
-    <h1 className="display-1" style={{ marginBottom: 50 }}>
-      {title}
-    </h1>
+  <>
+    <Head>
+      <title>{title}</title>
+    </Head>
+    <Container>
+      <h1 className="display-1">{title}</h1>
 
-    <Breadcrumb>
-      {parents.map(({ id, name: parentName, path }) => (
-        <BreadcrumbItem key={id}>
-          <a href={`?path=${path}`}>{getDirectoryName(parentName)}</a>
-        </BreadcrumbItem>
-      ))}
+      <Breadcrumb>
+        {parents.map(({ id, name: parentName, path }) => (
+          <BreadcrumbItem key={id}>
+            <a href={`?path=${path}`}>{getDirectoryName(parentName)}</a>
+          </BreadcrumbItem>
+        ))}
 
-      <BreadcrumbItem active>{getDirectoryName(name)}</BreadcrumbItem>
-    </Breadcrumb>
+        <BreadcrumbItem active>{getDirectoryName(name)}</BreadcrumbItem>
+      </Breadcrumb>
 
-    {directories.length > 0 && (
-      <Table<ChildDirectory>
-        name="Subdirectories"
-        columns={DIRECTORY_COLUMNS}
-        data={directories}
+      {directories.length > 0 && (
+        <Table<ChildDirectory>
+          name="Subdirectories"
+          columns={DIRECTORY_COLUMNS}
+          data={directories}
+          keyColumn="id"
+          defaultSortColumn="name"
+          defaultSortOrder="asc"
+          actions={({ path }): JSX.Element => (
+            <a
+              href={`/api/archive?path=${path}`}
+              download
+              className="btn btn-primary"
+            >
+              .zip
+            </a>
+          )}
+        />
+      )}
+
+      <Table<File>
+        name="Files"
+        columns={FILE_COLUMNS}
+        data={files}
         keyColumn="id"
         defaultSortColumn="name"
         defaultSortOrder="asc"
         actions={({ path }): JSX.Element => (
-          <a
-            href={`/api/archive?path=${path}`}
-            download
-            className="btn btn-primary"
-          >
-            .zip
-          </a>
+          <>
+            <a
+              href={`/api/download?path=${path}`}
+              download
+              className="btn btn-primary"
+            >
+              Download
+            </a>
+            <a
+              href={`/api/archive?path=${path}`}
+              download
+              className="btn btn-primary"
+            >
+              .zip
+            </a>
+          </>
         )}
       />
-    )}
-
-    <Table<File>
-      name="Files"
-      columns={FILE_COLUMNS}
-      data={files}
-      keyColumn="id"
-      defaultSortColumn="name"
-      defaultSortOrder="asc"
-      actions={({ path }): JSX.Element => (
-        <>
-          <a
-            href={`/api/download?path=${path}`}
-            download
-            className="btn btn-primary"
-            style={{ marginRight: 2 }}
-          >
-            Download
-          </a>
-          <a
-            href={`/api/archive?path=${path}`}
-            download
-            className="btn btn-primary"
-          >
-            .zip
-          </a>
-        </>
-      )}
-    />
-  </Container>
+    </Container>
+  </>
 );
 
 DirectoryPage.getInitialProps = async ({
