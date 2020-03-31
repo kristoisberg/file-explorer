@@ -26,7 +26,7 @@ type Props<T extends TableData> = {
   actions?: (row: T) => JSX.Element;
 };
 
-function Table<T extends TableData>({
+const Table = <T extends TableData>({
   name,
   columns,
   data,
@@ -34,7 +34,7 @@ function Table<T extends TableData>({
   keyColumn,
   defaultSortColumn,
   defaultSortOrder,
-}: Props<T>): JSX.Element {
+}: Props<T>): JSX.Element => {
   const [sortColumn, setSortColumn] = useState<keyof T>(defaultSortColumn);
   const [sortOrder, setSortOrder] = useState<SortOrder>(defaultSortOrder);
 
@@ -95,6 +95,6 @@ function Table<T extends TableData>({
       </ReactstrapTable>
     </>
   );
-}
+};
 
 export default Table;
